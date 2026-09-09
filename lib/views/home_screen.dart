@@ -4,6 +4,7 @@ import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import 'community_screen.dart';
+import 'create_activity_screen.dart';
 import 'nearby_activities_screen.dart';
 import 'profile_screen.dart';
 
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onTabTapped(int index) {
     if (index == 2) {
-      _showCreateGameModal();
+      _openCreateActivity();
     } else {
       setState(() {
         _currentIndex = index;
@@ -27,81 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _showCreateGameModal() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Create an Activity',
-                    style: AppTypography.headline.copyWith(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textDark,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Host a match, invite nearby players, and have fun!',
-                style: AppTypography.bodySubtitle.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      _currentIndex = 1; // Switch to Activities tab
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Text(
-                    'Host a Game',
-                    style: AppTypography.buttonText.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        ),
+  void _openCreateActivity() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const CreateActivityScreen(),
       ),
     );
   }
@@ -114,10 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          // Index 0: Home Content
+          // Index 0: Home Tab
           _buildHomeContent(),
 
-          // Index 1: Activities Tab (Nearby Activities)
+          // Index 1: Nearby Activities Tab
           const NearbyActivitiesScreen(),
 
           // Index 2: Create Action placeholder
@@ -133,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
-        onPlusPressed: _showCreateGameModal,
+        onPlusPressed: _openCreateActivity,
       ),
     );
   }

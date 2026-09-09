@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../constants/app_assets.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
@@ -33,26 +32,20 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
-                // ── 1. Blue Header ──
-                SliverToBoxAdapter(child: _buildHeader(activity, dateStr, timeStr, spotsLeft)),
-
-                // ── 2. Venue Card ──
+                // ── 1. Blue Header with Overlapping Venue Card (ss1) ──
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: _buildVenueCard(),
-                  ),
+                  child: _buildHeaderWithVenueOverlay(activity, dateStr, timeStr, spotsLeft),
                 ),
 
-                // ── 3. Stats Row ──
+                // ── 2. Stats Row ──
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                     child: _buildStatsRow(activity, timeStr, dateStr, spotsLeft),
                   ),
                 ),
 
-                // ── 4. Court Photo ──
+                // ── 3. Court Photo (all activities use Pickleball court photo) ──
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -60,7 +53,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                   ),
                 ),
 
-                // ── 5. Players Section ──
+                // ── 4. Players Section (uniform cards - ss2) ──
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
@@ -68,7 +61,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                   ),
                 ),
 
-                // ── 6. Game Chat ──
+                // ── 5. Game Chat (bubble layout - ss4) ──
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
@@ -76,7 +69,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                   ),
                 ),
 
-                // ── 7. Questions ──
+                // ── 6. Questions ──
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
@@ -84,7 +77,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                   ),
                 ),
 
-                // ── 8. About ──
+                // ── 7. About ──
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
@@ -92,7 +85,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                   ),
                 ),
 
-                // ── 9. Where you'll play (Map) ──
+                // ── 8. Where you'll play (Map) ──
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
@@ -114,106 +107,136 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
   }
 
   // ─────────────────────────────────────────
-  // 1. BLUE HEADER
+  // 1. BLUE HEADER WITH OVERLAPPING VENUE CARD (ss1)
   // ─────────────────────────────────────────
-  Widget _buildHeader(ActivityModel activity, String dateStr, String timeStr, int spotsLeft) {
-    return Container(
-      color: AppColors.primary,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top bar: back + share
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.ios_share_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Title + players badge
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      activity.title,
-                      style: AppTypography.headline.copyWith(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFECCC),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '${activity.joinedPlayers}/${activity.totalPlayers} Players',
-                      style: AppTypography.caption.copyWith(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFFD97706),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-
-              // Subtitle: date · time · location
-              Text(
-                '$dateStr · $timeStr · Bhavnagar',
-                style: AppTypography.bodySubtitle.copyWith(
-                  color: Colors.white.withValues(alpha: 0.85),
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
+  Widget _buildHeaderWithVenueOverlay(
+    ActivityModel activity,
+    String dateStr,
+    String timeStr,
+    int spotsLeft,
+  ) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Blue background extending behind the top half of the venue card
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 50,
+          child: Container(
+            color: AppColors.primary,
           ),
         ),
-      ),
+
+        // Foreground content: Header details + Overlapping Venue Card
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top bar: back + share
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.18),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.18),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.ios_share_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+
+                    // Title + players badge
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            activity.title,
+                            style: AppTypography.headline.copyWith(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              letterSpacing: -0.4,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFECCC),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${activity.joinedPlayers}/${activity.totalPlayers} Players',
+                            style: AppTypography.caption.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFD97706),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+
+                    // Subtitle: date · time · location
+                    Text(
+                      '$dateStr · $timeStr · Bhavnagar',
+                      style: AppTypography.bodySubtitle.copyWith(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Venue card overlapping the blue boundary
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 2, 16, 0),
+              child: _buildVenueCard(),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -224,12 +247,12 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.07),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -241,16 +264,16 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                width: 38,
-                height: 38,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: const Color(0xFFEEF4FF),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.location_on_rounded,
                   color: AppColors.primary,
-                  size: 20,
+                  size: 22,
                 ),
               ),
               const SizedBox(width: 12),
@@ -261,7 +284,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                     Text(
                       'Bhavnagar Pickleball Arena',
                       style: AppTypography.titleMedium.copyWith(
-                        fontSize: 14.5,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textDark,
                       ),
@@ -280,7 +303,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          const Divider(color: Color(0xFFF0F2F5), height: 1),
+          const Divider(color: Color(0xFFF1F5F9), height: 1),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -411,52 +434,29 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
   }
 
   // ─────────────────────────────────────────
-  // 4. COURT PHOTO
+  // 4. COURT PHOTO (All activities use Pickleball Court photo)
   // ─────────────────────────────────────────
   Widget _buildCourtPhoto(ActivityModel activity) {
-    // Show the pickleball court image for pickleball, generic for others
-    final bool isPickleball = activity.sportCategory == SportCategory.pickleball;
-
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: isPickleball
-          ? Image.asset(
-              AppAssets.pickleballCourtsPng,
-              width: double.infinity,
-              height: 200,
-              fit: BoxFit.cover,
-            )
-          : Container(
-              width: double.infinity,
-              height: 200,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF063E9E), Color(0xFF2E7DE8)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Center(
-                child: Image.asset(
-                  activity.iconAsset,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
+      borderRadius: BorderRadius.circular(18),
+      child: Image.asset(
+        AppAssets.pickleballCourtsPng,
+        width: double.infinity,
+        height: 200,
+        fit: BoxFit.cover,
+      ),
     );
   }
 
   // ─────────────────────────────────────────
-  // 5. PLAYERS SECTION
+  // 5. PLAYERS SECTION (Uniform cards - ss2)
   // ─────────────────────────────────────────
   Widget _buildPlayersSection() {
     final players = [
-      {'initial': 'V', 'name': 'Vatsal P.', 'role': 'Host', 'color': AppColors.primary},
-      {'initial': 'H', 'name': 'Hetal B.', 'role': 'Intermediate', 'color': const Color(0xFFDB2777)},
-      {'initial': 'A', 'name': 'Arjun M.', 'role': 'Beginner', 'color': const Color(0xFF16A34A)},
-      {'initial': 'P', 'name': 'Priya K.', 'role': 'Beginner', 'color': const Color(0xFFD97706)},
+      {'initial': 'V', 'name': 'Vatsal P.', 'role': 'Host', 'color': const Color(0xFF0D47A1)},
+      {'initial': 'H', 'name': 'Hetal B.', 'role': 'Intermediate', 'color': const Color(0xFFE11D48)},
+      {'initial': 'A', 'name': 'Arjun M.', 'role': 'Beginner', 'color': const Color(0xFF10B981)},
+      {'initial': 'P', 'name': 'Priya K.', 'role': 'Beginner', 'color': const Color(0xFFF59E0B)},
     ];
 
     return Column(
@@ -495,22 +495,31 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
         ),
         const SizedBox(height: 14),
 
-        // Player cards horizontal scroll
+        // Player cards horizontal scroll - all same uniform size (ss2)
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           child: Row(
             children: players.map((p) {
               return Container(
-                width: 80,
+                width: 86,
+                height: 126,
                 margin: const EdgeInsets.only(right: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFEFF2F6)),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFEFF2F6), width: 1.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
                       width: 44,
@@ -533,23 +542,32 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                     Text(
                       p['name'] as String,
                       style: AppTypography.caption.copyWith(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textDark,
                       ),
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      p['role'] as String,
-                      style: AppTypography.caption.copyWith(
-                        fontSize: 10.5,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w500,
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEFF6FF),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      textAlign: TextAlign.center,
+                      child: Text(
+                        p['role'] as String,
+                        style: AppTypography.caption.copyWith(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF2563EB),
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -582,7 +600,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
   }
 
   // ─────────────────────────────────────────
-  // 6. GAME CHAT
+  // 6. GAME CHAT (Bubble layout - ss4)
   // ─────────────────────────────────────────
   Widget _buildGameChat() {
     return Column(
@@ -607,15 +625,32 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFEFF2F6)),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0xFFEFF2F6), width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(14),
           child: Column(
             children: [
-              _chatMessage('R', 'Riya S.', 'Are we meeting at the venue directly?', const Color(0xFFEA580C)),
+              _chatBubble(
+                initial: 'R',
+                name: 'Riya S.',
+                message: 'Are we meeting at the venue directly?',
+                avatarColor: const Color(0xFFE11D48),
+              ),
               const SizedBox(height: 12),
-              _chatMessage('H', 'Hetal B.', 'Mummy ne mana ker diya!!!!', const Color(0xFF16A34A)),
+              _chatBubble(
+                initial: 'H',
+                name: 'Hetal B.',
+                message: 'Mummy ne mana ker diya!!!!',
+                avatarColor: const Color(0xFF10B981),
+              ),
             ],
           ),
         ),
@@ -642,19 +677,24 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
     );
   }
 
-  Widget _chatMessage(String initial, String name, String message, Color avatarColor) {
+  Widget _chatBubble({
+    required String initial,
+    required String name,
+    required String message,
+    required Color avatarColor,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 34,
-          height: 34,
+          width: 36,
+          height: 36,
           decoration: BoxDecoration(color: avatarColor, shape: BoxShape.circle),
           alignment: Alignment.center,
           child: Text(
             initial,
             style: AppTypography.caption.copyWith(
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
@@ -662,26 +702,34 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: AppTypography.caption.copyWith(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textDark,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: AppTypography.caption.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textDark,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                message,
-                style: AppTypography.caption.copyWith(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
+                const SizedBox(height: 2),
+                Text(
+                  message,
+                  style: AppTypography.caption.copyWith(
+                    fontSize: 12.5,
+                    color: const Color(0xFF334155),
+                    height: 1.35,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
