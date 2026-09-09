@@ -3,6 +3,9 @@ import '../constants/app_assets.dart';
 import '../models/activity_model.dart';
 
 class ActivitiesController extends ChangeNotifier {
+  static final ActivitiesController _instance = ActivitiesController._internal();
+  factory ActivitiesController() => _instance;
+
   int _selectedDateIndex = 0;
   String _selectedFilterId = 'all';
   String _selectedLocation = 'Bhavnagar';
@@ -20,7 +23,7 @@ class ActivitiesController extends ChangeNotifier {
   List<DateItemModel> get dates => _dates;
   List<FilterChipModel> get filters => _filters;
 
-  ActivitiesController() {
+  ActivitiesController._internal() {
     _initializeData();
   }
 
@@ -312,6 +315,11 @@ class ActivitiesController extends ChangeNotifier {
 
   void updateLocation(String location) {
     _selectedLocation = location;
+    notifyListeners();
+  }
+
+  void addActivity(ActivityModel activity) {
+    _allActivities.insert(0, activity);
     notifyListeners();
   }
 }

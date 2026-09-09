@@ -3,17 +3,18 @@ import 'package:flutter/services.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
 import '../models/activity_model.dart';
+import 'activity_detail_screen.dart';
 
-class JoinedScreen extends StatefulWidget {
+class ActivityCreatedScreen extends StatefulWidget {
   final ActivityModel activity;
 
-  const JoinedScreen({super.key, required this.activity});
+  const ActivityCreatedScreen({super.key, required this.activity});
 
   @override
-  State<JoinedScreen> createState() => _JoinedScreenState();
+  State<ActivityCreatedScreen> createState() => _ActivityCreatedScreenState();
 }
 
-class _JoinedScreenState extends State<JoinedScreen>
+class _ActivityCreatedScreenState extends State<ActivityCreatedScreen>
     with TickerProviderStateMixin {
   late AnimationController _scaleController;
   late AnimationController _fadeController;
@@ -145,7 +146,7 @@ class _JoinedScreenState extends State<JoinedScreen>
                 child: Column(
                   children: [
                     Text(
-                      "Activity joined!",
+                      "Activity created!",
                       style: AppTypography.headline.copyWith(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
@@ -298,8 +299,12 @@ class _JoinedScreenState extends State<JoinedScreen>
                       // 1. Open activity (solid deep blue)
                       GestureDetector(
                         onTap: () {
-                          // Return to detail / view activity
-                          Navigator.of(context).pop();
+                          // Push directly to ActivityDetailScreen for this activity
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (_) => ActivityDetailScreen(activity: activity),
+                            ),
+                          );
                         },
                         child: Container(
                           width: double.infinity,
@@ -333,7 +338,7 @@ class _JoinedScreenState extends State<JoinedScreen>
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Invite link ready to share!'),
+                              content: Text('Invite link copied to clipboard!'),
                               duration: Duration(seconds: 2),
                             ),
                           );
