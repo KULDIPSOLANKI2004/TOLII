@@ -3,13 +3,17 @@ import '../constants/app_assets.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
 import '../controllers/auth_controller.dart';
+import '../widgets/auth_step_progress.dart';
 import '../widgets/custom_button.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/tolii_logo.dart';
 import 'otp_screen.dart';
 
 class EmailScreen extends StatefulWidget {
-  const EmailScreen({super.key});
+  final AuthController? authController;
+
+  const EmailScreen({
+    super.key,
+    this.authController,
+  });
 
   @override
   State<EmailScreen> createState() => _EmailScreenState();
@@ -17,24 +21,47 @@ class EmailScreen extends StatefulWidget {
 
 class _EmailScreenState extends State<EmailScreen> {
   late final AuthController _authController;
-  late final TextEditingController _emailTextController;
+  late final TextEditingController _textController;
+  bool _isLocalController = false;
 
   @override
   void initState() {
     super.initState();
-    _authController = AuthController();
-    _emailTextController = TextEditingController();
+    if (widget.authController != null) {
+      _authController = widget.authController!;
+    } else {
+      _authController = AuthController();
+      _isLocalController = true;
+    }
+    _textController = TextEditingController(
+      text: _authController.state.authMode == 'email'
+          ? _authController.state.email
+          : _authController.state.rawPhoneNumber,
+    );
   }
 
   @override
   void dispose() {
-    _authController.dispose();
-    _emailTextController.dispose();
+    if (_isLocalController) {
+      _authController.dispose();
+    }
+    _textController.dispose();
     super.dispose();
   }
 
   Future<void> _handleSendOtp() async {
     FocusScope.of(context).unfocus();
+
+    final mode = _authController.state.authMode;
+    if (mode == 'email') {
+      if (!_authController.validateEmail(_textController.text)) {
+        return;
+      }
+    } else {
+      if (!_authController.validatePhone(_textController.text)) {
+        return;
+      }
+    }
 
     final success = await _authController.sendOtp();
     if (success && mounted) {
@@ -62,57 +89,68 @@ class _EmailScreenState extends State<EmailScreen> {
     }
   }
 
+  void _switchAuthMode(String newMode) {
+    _authController.setAuthMode(newMode);
+    _textController.text = newMode == 'email'
+        ? _authController.state.email
+        : _authController.state.rawPhoneNumber;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       body: SafeArea(
         bottom: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            return SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      // Top Section with Tolii Logo
-                      Expanded(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 32,
+            return AnimatedBuilder(
+              animation: _authController,
+              builder: (context, child) {
+                final state = _authController.state;
+                final isPhoneMode = state.authMode == 'phone';
+
+                return SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Top 1 of 5 Header Section
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                            child: AuthStepProgress(
+                              currentStep: 1,
+                              totalSteps: 5,
+                              title: "Let's get you started",
+                              subtitle: isPhoneMode
+                                  ? 'Enter your phone number to join activities and meet people nearby.'
+                                  : 'Enter your email to join activities and meet people nearby.',
                             ),
-                            child: const ToliiLogo(width: 170),
                           ),
-                        ),
-                      ),
 
-                      // Bottom White Card
-                      AnimatedBuilder(
-                        animation: _authController,
-                        builder: (context, child) {
-                          final state = _authController.state;
+                          const Spacer(),
 
-                          return Container(
+                          // Bottom Card Sheet
+                          Container(
                             width: double.infinity,
                             decoration: const BoxDecoration(
-                              color: AppColors.cardSurface,
+                              color: Colors.white,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(28),
                                 topRight: Radius.circular(28),
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Color(0x0F000000),
-                                  blurRadius: 20,
-                                  offset: Offset(0, -4),
+                                  color: Color(0x14000000),
+                                  blurRadius: 24,
+                                  offset: Offset(0, -6),
                                 ),
                               ],
                             ),
-                            padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+                            padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
                             child: SafeArea(
                               top: false,
                               child: Column(
@@ -129,6 +167,7 @@ class _EmailScreenState extends State<EmailScreen> {
                                         style:
                                             AppTypography.titleLarge.copyWith(
                                           fontSize: 18,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
                                       IconButton(
@@ -147,23 +186,140 @@ class _EmailScreenState extends State<EmailScreen> {
                                   ),
                                   const SizedBox(height: 18),
 
-                                  // Email Input Field with inline validation
-                                  CustomTextField(
-                                    label: 'Enter Email',
-                                    hintText: '',
-                                    controller: _emailTextController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    textInputAction: TextInputAction.done,
-                                    errorText: state.emailError,
-                                    onChanged: (value) {
-                                      _authController.state.email = value;
-                                      if (state.emailError != null) {
-                                        _authController.clearEmailError();
-                                      }
-                                    },
-                                    onSubmitted: (_) => _handleSendOtp(),
-                                  ),
-                                  const SizedBox(height: 16),
+                                  // Input Field (Mobile Number or Email)
+                                  if (isPhoneMode) ...[
+                                    Text(
+                                      'Enter Mobile Number',
+                                      style: AppTypography.inputLabel.copyWith(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.inputFill,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: state.phoneError != null
+                                              ? AppColors.borderError
+                                              : AppColors.borderLight,
+                                          width: state.phoneError != null
+                                              ? 1.4
+                                              : 1.0,
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 14),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            '+91  |',
+                                            style: AppTypography.inputText
+                                                .copyWith(
+                                              color: AppColors.textPrimary,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: TextField(
+                                              controller: _textController,
+                                              keyboardType: TextInputType.phone,
+                                              textInputAction:
+                                                  TextInputAction.done,
+                                              style: AppTypography.inputText,
+                                              decoration:
+                                                  const InputDecoration(
+                                                hintText: '98765 43210',
+                                                hintStyle: TextStyle(
+                                                  color: AppColors.textTertiary,
+                                                  fontSize: 15,
+                                                ),
+                                                border: InputBorder.none,
+                                                isDense: true,
+                                                contentPadding: EdgeInsets.zero,
+                                              ),
+                                              onChanged: (value) {
+                                                state.rawPhoneNumber = value;
+                                                state.phoneNumber =
+                                                    '+91 $value';
+                                                _authController
+                                                    .clearPhoneError();
+                                              },
+                                              onSubmitted: (_) =>
+                                                  _handleSendOtp(),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    if (state.phoneError != null) ...[
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        state.phoneError!,
+                                        style: AppTypography.errorText,
+                                      ),
+                                    ],
+                                  ] else ...[
+                                    Text(
+                                      'Enter Email',
+                                      style: AppTypography.inputLabel.copyWith(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.inputFill,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: state.emailError != null
+                                              ? AppColors.borderError
+                                              : AppColors.borderLight,
+                                          width: state.emailError != null
+                                              ? 1.4
+                                              : 1.0,
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 14),
+                                      child: TextField(
+                                        controller: _textController,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        textInputAction: TextInputAction.done,
+                                        style: AppTypography.inputText,
+                                        decoration: const InputDecoration(
+                                          hintText: 'yourname@gmail.com',
+                                          hintStyle: TextStyle(
+                                            color: AppColors.textTertiary,
+                                            fontSize: 15,
+                                          ),
+                                          border: InputBorder.none,
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 12),
+                                        ),
+                                        onChanged: (value) {
+                                          state.email = value;
+                                          _authController.clearEmailError();
+                                        },
+                                        onSubmitted: (_) => _handleSendOtp(),
+                                      ),
+                                    ),
+                                    if (state.emailError != null) ...[
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        state.emailError!,
+                                        style: AppTypography.errorText,
+                                      ),
+                                    ],
+                                  ],
+                                  const SizedBox(height: 18),
 
                                   // Send OTP Button
                                   CustomButton(
@@ -211,6 +367,7 @@ class _EmailScreenState extends State<EmailScreen> {
                                                 AppTypography.caption.copyWith(
                                               color: AppColors.textPrimary,
                                               fontSize: 12,
+                                              fontWeight: FontWeight.w400,
                                             ),
                                           ),
                                         ),
@@ -246,7 +403,8 @@ class _EmailScreenState extends State<EmailScreen> {
                                             horizontal: 16),
                                         child: Text(
                                           'Or',
-                                          style: AppTypography.caption.copyWith(
+                                          style:
+                                              AppTypography.caption.copyWith(
                                             color: AppColors.textSecondary,
                                             fontSize: 12,
                                           ),
@@ -262,21 +420,26 @@ class _EmailScreenState extends State<EmailScreen> {
                                   ),
                                   const SizedBox(height: 20),
 
-                                  // Social Login Icons (Email & Google)
+                                  // Social Login Icons (Email / Phone Mode Switcher & Google)
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
                                     children: [
                                       _SocialAuthButton(
-                                        imageAsset: AppAssets.gmailLogoPng,
+                                        icon: isPhoneMode
+                                            ? Icons.mail_outline_rounded
+                                            : Icons.phone_android_rounded,
+                                        imageAsset: null,
                                         onTap: () {
-                                          // Social sign in action
+                                          _switchAuthMode(
+                                              isPhoneMode ? 'email' : 'phone');
                                         },
                                       ),
                                       const SizedBox(width: 32),
                                       _SocialAuthButton(
                                         imageAsset: AppAssets.googleLogoPng,
                                         onTap: () {
-                                          // Google sign in action
+                                          _handleSendOtp();
                                         },
                                       ),
                                     ],
@@ -284,13 +447,13 @@ class _EmailScreenState extends State<EmailScreen> {
                                 ],
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             );
           },
         ),
@@ -300,11 +463,13 @@ class _EmailScreenState extends State<EmailScreen> {
 }
 
 class _SocialAuthButton extends StatelessWidget {
-  final String imageAsset;
+  final String? imageAsset;
+  final IconData? icon;
   final VoidCallback onTap;
 
   const _SocialAuthButton({
-    required this.imageAsset,
+    this.imageAsset,
+    this.icon,
     required this.onTap,
   });
 
@@ -331,11 +496,17 @@ class _SocialAuthButton extends StatelessWidget {
             ),
           ],
         ),
-        padding: const EdgeInsets.all(12),
-        child: Image.asset(
-          imageAsset,
-          fit: BoxFit.contain,
-        ),
+        padding: const EdgeInsets.all(11),
+        child: imageAsset != null
+            ? Image.asset(
+                imageAsset!,
+                fit: BoxFit.contain,
+              )
+            : Icon(
+                icon,
+                size: 22,
+                color: AppColors.textPrimary,
+              ),
       ),
     );
   }

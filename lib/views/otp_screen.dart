@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
 import '../controllers/auth_controller.dart';
+import '../widgets/auth_step_progress.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/otp_pin_input.dart';
-import '../widgets/tolii_logo.dart';
-import 'home_screen.dart';
+import 'location_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   final AuthController authController;
@@ -33,23 +33,27 @@ class _OtpScreenState extends State<OtpScreen> {
 
     final success = await _controller.verifyOtp();
     if (success && mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).push(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              const HomeScreen(),
+              LocationScreen(
+            authController: _controller,
+          ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             final curvedAnimation = CurvedAnimation(
               parent: animation,
               curve: Curves.easeOutCubic,
             );
-            return FadeTransition(
-              opacity: curvedAnimation,
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(curvedAnimation),
               child: child,
             );
           },
-          transitionDuration: const Duration(milliseconds: 350),
+          transitionDuration: const Duration(milliseconds: 300),
         ),
-        (route) => false,
       );
     }
   }
@@ -57,50 +61,57 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       body: SafeArea(
         bottom: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            return SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      // Top Section with Tolii Logo
-                      Expanded(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 32,
+            return AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                final state = _controller.state;
+                final targetDestination = state.authMode == 'email'
+                    ? state.email
+                    : (state.phoneNumber.isNotEmpty
+                        ? state.phoneNumber
+                        : '+91 98765 43210');
+
+                return SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Top 2 of 5 Header Section
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                            child: AuthStepProgress(
+                              currentStep: 2,
+                              totalSteps: 5,
+                              title: 'Check your messages',
+                              subtitle:
+                                  'We sent a 6-digit code to $targetDestination.',
                             ),
-                            child: const ToliiLogo(width: 170),
                           ),
-                        ),
-                      ),
 
-                      // Bottom White Card
-                      AnimatedBuilder(
-                        animation: _controller,
-                        builder: (context, child) {
-                          final state = _controller.state;
+                          const Spacer(),
 
-                          return Container(
+                          // Bottom White Card
+                          Container(
                             width: double.infinity,
                             decoration: const BoxDecoration(
-                              color: AppColors.cardSurface,
+                              color: Colors.white,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(28),
                                 topRight: Radius.circular(28),
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Color(0x0F000000),
-                                  blurRadius: 20,
-                                  offset: Offset(0, -4),
+                                  color: Color(0x14000000),
+                                  blurRadius: 24,
+                                  offset: Offset(0, -6),
                                 ),
                               ],
                             ),
@@ -121,6 +132,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                         style:
                                             AppTypography.titleLarge.copyWith(
                                           fontSize: 18,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
                                       IconButton(
@@ -149,24 +161,24 @@ class _OtpScreenState extends State<OtpScreen> {
                                         style:
                                             AppTypography.inputLabel.copyWith(
                                           fontSize: 13,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                       Text(
-                                        state.phoneNumber.isNotEmpty
-                                            ? state.phoneNumber
-                                            : state.email,
+                                        targetDestination,
                                         style: AppTypography.caption.copyWith(
                                           color: AppColors.textSecondary,
                                           fontWeight: FontWeight.w500,
+                                          fontSize: 12,
                                         ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 12),
 
-                                  // 5-Digit OTP Boxes with inline error
+                                  // 6-Digit OTP Boxes with inline error
                                   OtpPinInput(
-                                    length: 5,
+                                    length: 6,
                                     errorText: state.otpError,
                                     onChanged: (otp) {
                                       _controller.updateOtp(otp);
@@ -213,13 +225,13 @@ class _OtpScreenState extends State<OtpScreen> {
                                 ],
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             );
           },
         ),

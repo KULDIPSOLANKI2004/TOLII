@@ -11,7 +11,7 @@ class OtpPinInput extends StatefulWidget {
 
   const OtpPinInput({
     super.key,
-    this.length = 5,
+    this.length = 6,
     required this.onCompleted,
     this.onChanged,
     this.errorText,
@@ -88,50 +88,56 @@ class _OtpPinInputState extends State<OtpPinInput> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(widget.length, (index) {
-            return SizedBox(
-              width: 52,
-              height: 52,
-              child: KeyboardListener(
-                focusNode: FocusNode(),
-                onKeyEvent: (event) {
-                  if (event is KeyDownEvent &&
-                      event.logicalKey == LogicalKeyboardKey.backspace &&
-                      _controllers[index].text.isEmpty &&
-                      index > 0) {
-                    _focusNodes[index - 1].requestFocus();
-                    _controllers[index - 1].clear();
-                    widget.onChanged?.call(_getOtp());
-                  }
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.inputFill,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: hasError
-                          ? AppColors.borderError
-                          : _focusNodes[index].hasFocus
-                              ? AppColors.borderFocus
-                              : AppColors.borderLight,
-                      width: hasError || _focusNodes[index].hasFocus ? 1.4 : 1.0,
-                    ),
-                  ),
-                  child: Center(
-                    child: TextField(
-                      controller: _controllers[index],
-                      focusNode: _focusNodes[index],
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      maxLength: 1,
-                      style: AppTypography.otpDigit,
-                      cursorColor: AppColors.primary,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                        counterText: '',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.zero,
+            return Expanded(
+              child: Container(
+                margin: EdgeInsets.symmetric(
+                  horizontal: widget.length > 5 ? 3 : 4,
+                ),
+                height: 52,
+                child: KeyboardListener(
+                  focusNode: FocusNode(),
+                  onKeyEvent: (event) {
+                    if (event is KeyDownEvent &&
+                        event.logicalKey == LogicalKeyboardKey.backspace &&
+                        _controllers[index].text.isEmpty &&
+                        index > 0) {
+                      _focusNodes[index - 1].requestFocus();
+                      _controllers[index - 1].clear();
+                      widget.onChanged?.call(_getOtp());
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.inputFill,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: hasError
+                            ? AppColors.borderError
+                            : _focusNodes[index].hasFocus
+                                ? AppColors.borderFocus
+                                : AppColors.borderLight,
+                        width: hasError || _focusNodes[index].hasFocus ? 1.4 : 1.0,
                       ),
-                      onChanged: (value) => _onDigitChanged(index, value),
+                    ),
+                    child: Center(
+                      child: TextField(
+                        controller: _controllers[index],
+                        focusNode: _focusNodes[index],
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        maxLength: 1,
+                        style: AppTypography.otpDigit.copyWith(
+                          fontSize: 18,
+                        ),
+                        cursorColor: AppColors.primary,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        onChanged: (value) => _onDigitChanged(index, value),
+                      ),
                     ),
                   ),
                 ),

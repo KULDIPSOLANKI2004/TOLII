@@ -3,7 +3,9 @@ import '../constants/app_assets.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
 import '../models/activity_model.dart';
+import '../widgets/invite_players_sheet.dart';
 import 'joined_screen.dart';
+import 'players_screen.dart';
 
 class ActivityDetailScreen extends StatefulWidget {
   final ActivityModel activity;
@@ -53,11 +55,11 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                   ),
                 ),
 
-                // ── 4. Players Section (uniform cards - ss2) ──
+                // ── 4. Players Section (Screenshot 1: Vertical card with + Add & Manage) ──
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
-                    child: _buildPlayersSection(),
+                    child: _buildPlayersSection(activity),
                   ),
                 ),
 
@@ -449,149 +451,301 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
   }
 
   // ─────────────────────────────────────────
-  // 5. PLAYERS SECTION (Uniform cards - ss2)
+  // 5. PLAYERS SECTION (Screenshot 1: Vertical card with + Add & Manage)
   // ─────────────────────────────────────────
-  Widget _buildPlayersSection() {
-    final players = [
-      {'initial': 'V', 'name': 'Vatsal P.', 'role': 'Host', 'color': const Color(0xFF0D47A1)},
-      {'initial': 'H', 'name': 'Hetal B.', 'role': 'Intermediate', 'color': const Color(0xFFE11D48)},
-      {'initial': 'A', 'name': 'Arjun M.', 'role': 'Beginner', 'color': const Color(0xFF10B981)},
-      {'initial': 'P', 'name': 'Priya K.', 'role': 'Beginner', 'color': const Color(0xFFF59E0B)},
+  Widget _buildPlayersSection(ActivityModel activity) {
+    final players = activity.players ?? [
+      const PlayerModel(
+        id: 'p_1',
+        name: 'Meet Patel',
+        role: 'HOST',
+        skill: 'Intermediate',
+        isHost: true,
+        avatarBgColor: Color(0xFF475569),
+      ),
+      const PlayerModel(
+        id: 'p_2',
+        name: 'Rohan Shah',
+        role: 'MEMBER',
+        skill: 'Advanced',
+        avatarBgColor: Color(0xFF334155),
+      ),
+      const PlayerModel(
+        id: 'p_3',
+        name: 'Amit Gohel',
+        role: 'MEMBER',
+        skill: 'Intermediate',
+        avatarBgColor: Color(0xFF0F172A),
+      ),
+      const PlayerModel(
+        id: 'p_4',
+        name: 'Divyesh Solanki',
+        role: 'MEMBER',
+        skill: 'Beginner',
+        avatarBgColor: Color(0xFF2563EB),
+      ),
     ];
+
+    final displayPlayers = players.take(4).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section title
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'Players',
-                style: AppTypography.headline.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textDark,
-                ),
-              ),
-              TextSpan(
-                text: ' · 6',
-                style: AppTypography.headline.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textDark,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Meet who\'s joining',
-          style: AppTypography.bodySubtitle.copyWith(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 14),
-
-        // Player cards horizontal scroll - all same uniform size (ss2)
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: players.map((p) {
-              return Container(
-                width: 86,
-                height: 126,
-                margin: const EdgeInsets.only(right: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFEFF2F6), width: 1.2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: p['color'] as Color,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        p['initial'] as String,
-                        style: AppTypography.titleMedium.copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      p['name'] as String,
-                      style: AppTypography.caption.copyWith(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textDark,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEFF6FF),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        p['role'] as String,
-                        style: AppTypography.caption.copyWith(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF2563EB),
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-        const SizedBox(height: 14),
-
-        // View all link
+        // "View all players ->" blue link on top
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => PlayersScreen(activity: activity),
+              ),
+            );
+          },
           child: Row(
             children: [
               Text(
                 'View all players',
                 style: AppTypography.bodySubtitle.copyWith(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
                   color: AppColors.primary,
                 ),
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.arrow_forward_rounded, size: 16, color: AppColors.primary),
+              const Icon(
+                Icons.arrow_forward_rounded,
+                size: 16,
+                color: AppColors.primary,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Section Title: "Players (8)" & "Invite Only"
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Players (${activity.totalPlayers})',
+              style: AppTypography.headline.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textDark,
+              ),
+            ),
+            Row(
+              children: [
+                const Icon(
+                  Icons.lock_outline_rounded,
+                  size: 14,
+                  color: Color(0xFF64748B),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Invite Only',
+                  style: AppTypography.caption.copyWith(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Vertical List Card
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0xFFEFF2F6), width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              ...displayPlayers.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final player = entry.value;
+                final isLast = idx == displayPlayers.length - 1;
+
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          // Avatar
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: player.avatarBgColor,
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              player.name.isNotEmpty ? player.name[0] : 'P',
+                              style: AppTypography.titleMedium.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+
+                          // Name & Skill
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  player.name,
+                                  style: AppTypography.titleMedium.copyWith(
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF0F172A),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  player.skill,
+                                  style: AppTypography.caption.copyWith(
+                                    fontSize: 12,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // HOST Badge
+                          if (player.isHost)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 9,
+                                vertical: 3.5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEEF4FF),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'HOST',
+                                style: AppTypography.caption.copyWith(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.primary,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (!isLast)
+                      const Divider(color: Color(0xFFF1F5F9), height: 1),
+                  ],
+                );
+              }),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Action Buttons Row below card: "+ Add" & "⚙ Manage"
+        Container(
+          height: 48,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFEFF2F6), width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              // + Add Button
+              Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    InvitePlayersBottomSheet.show(context, activity: activity);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.add_circle_outline_rounded,
+                        size: 18,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Add',
+                        style: AppTypography.buttonText.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                width: 1,
+                height: 24,
+                color: const Color(0xFFE2E8F0),
+              ),
+              // ⚙ Manage Button
+              Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PlayersScreen(activity: activity),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.settings_outlined,
+                        size: 18,
+                        color: Color(0xFF475569),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Manage',
+                        style: AppTypography.buttonText.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF475569),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

@@ -142,6 +142,10 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
       pricePerPerson: _selectedCost,
       note: _noteController.text.trim(),
       date: _selectedDate,
+      isHost: true,
+      venueName: _venueName,
+      venueLocation: '$_venueName · Bhavnagar',
+      venueConfirmed: true,
     );
 
     // Add to ActivitiesController singleton
@@ -164,22 +168,29 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
           children: [
             // Top Navigation Bar
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
-                      width: 38,
-                      height: 38,
+                      width: 34,
+                      height: 34,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                         border: Border.all(color: const Color(0xFFE2E8F0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
                       ),
                       child: const Icon(
                         Icons.arrow_back_ios_new_rounded,
-                        size: 15,
+                        size: 14,
                         color: AppColors.textDark,
                       ),
                     ),
@@ -190,23 +201,24 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         Text(
                           'Create Activity',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.2,
                             color: AppColors.textDark,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        SizedBox(height: 1),
                         Text(
                           'Bring people together',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 11,
                             color: Color(0xFF64748B),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 38), // Balanced alignment
+                  const SizedBox(width: 34), // Balanced alignment
                 ],
               ),
             ),
@@ -215,41 +227,41 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // ── 1. Grouped Information Card (Activity, Where, Date, Time) ──
                     _buildGroupedInfoCard(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     // ── 2. Players Needed Card ──
                     _buildPlayersNeededCard(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
 
                     // ── 3. Skill Level Section ──
                     _buildSkillLevelSection(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
 
                     // ── 4. Cost Per Person Card ──
                     _buildCostCard(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
 
                     // ── 5. Who Can Join Card ──
                     _buildWhoCanJoinCard(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
 
                     // ── 6. Add a Note Section ──
                     _buildNoteSection(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     // ── 7. Group Chat Card ──
                     _buildGroupChatCard(),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 18),
 
                     // ── 8. Create Button CTA ──
                     _buildCreateButtonCTA(),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -267,17 +279,17 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.025),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -286,13 +298,13 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             label: 'Activity',
             value: _sportTitle,
             iconWidget: Container(
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               decoration: BoxDecoration(
                 color: const Color(0xFFEEF4FF),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(7),
               ),
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(5),
               child: Image.asset(_sportIcon, fit: BoxFit.contain),
             ),
             onTap: _openSelectActivity,
@@ -305,7 +317,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             value: _venueName,
             iconWidget: const Icon(
               Icons.location_on_outlined,
-              size: 22,
+              size: 18,
               color: AppColors.primary,
             ),
             onTap: _openSelectLocation,
@@ -318,7 +330,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             value: _dateFormatted,
             iconWidget: const Icon(
               Icons.calendar_today_outlined,
-              size: 20,
+              size: 17,
               color: AppColors.primary,
             ),
             onTap: _openDatePicker,
@@ -331,25 +343,25 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             value: _timeFormatted,
             iconWidget: const Icon(
               Icons.access_time_rounded,
-              size: 20,
+              size: 17,
               color: AppColors.primary,
             ),
             onTap: _openTimePicker,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
 
           // Estimated duration helper
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: EdgeInsets.symmetric(vertical: 3),
             child: Text(
               'Estimated duration · 1 hour',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 color: Color(0xFF94A3B8),
               ),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
         ],
       ),
     );
@@ -363,9 +375,9 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             Expanded(
@@ -378,7 +390,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         TextSpan(
                           text: label,
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 11,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFF64748B),
                           ),
@@ -386,7 +398,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         const TextSpan(
                           text: ' *',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: Color(0xFFEA580C),
                           ),
@@ -394,12 +406,12 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
                   Text(
                     value,
                     style: const TextStyle(
-                      fontSize: 15.5,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.textDark,
                     ),
                     maxLines: 1,
@@ -409,11 +421,11 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
               ),
             ),
             iconWidget,
-            const SizedBox(width: 8),
+            const SizedBox(width: 4),
             const Icon(
               Icons.chevron_right_rounded,
-              color: Color(0xFFCBD5E1),
-              size: 20,
+              color: Color(0xFF94A3B8),
+              size: 16,
             ),
           ],
         ),
@@ -428,17 +440,17 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.025),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -451,15 +463,15 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     TextSpan(
                       text: 'Players needed',
                       style: TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.textDark,
                       ),
                     ),
                     TextSpan(
                       text: ' *',
                       style: TextStyle(
-                        fontSize: 14.5,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFFEA580C),
                       ),
@@ -480,37 +492,37 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                           }
                         : null,
                     child: Container(
-                      width: 34,
-                      height: 34,
+                      width: 28,
+                      height: 28,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: _playersNeeded > 2
                               ? AppColors.primary
                               : const Color(0xFFCBD5E1),
-                          width: 1.5,
+                          width: 1.2,
                         ),
                       ),
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.remove,
-                        size: 16,
+                        size: 14,
                         color: _playersNeeded > 2
                             ? AppColors.primary
                             : const Color(0xFFCBD5E1),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Text(
                     '$_playersNeeded',
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
                       color: AppColors.textDark,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   GestureDetector(
                     onTap: () {
                       setState(() {
@@ -518,8 +530,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       });
                     },
                     child: Container(
-                      width: 34,
-                      height: 34,
+                      width: 28,
+                      height: 28,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.primary,
@@ -527,7 +539,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       alignment: Alignment.center,
                       child: const Icon(
                         Icons.add,
-                        size: 18,
+                        size: 15,
                         color: Colors.white,
                       ),
                     ),
@@ -536,19 +548,19 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           const Text(
             'How many people can join?',
             style: TextStyle(
-              fontSize: 12.5,
+              fontSize: 11.5,
               color: Color(0xFF64748B),
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 1),
           const Text(
             'Minimum players · 4',
             style: TextStyle(
-              fontSize: 11.5,
+              fontSize: 10.5,
               color: Color(0xFF94A3B8),
             ),
           ),
@@ -567,16 +579,16 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
         const Text(
           'SKILL LEVEL',
           style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.6,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
             color: Color(0xFF64748B),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: 6,
+          runSpacing: 6,
           children: _skillLevels.map((skill) {
             final bool isSelected = _selectedSkillLevel == skill;
             return GestureDetector(
@@ -586,22 +598,22 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
                         ? AppColors.primary
                         : const Color(0xFFE2E8F0),
-                    width: 1.2,
+                    width: 1.0,
                   ),
                 ),
                 child: Text(
                   skill.label,
                   style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    fontSize: 11.5,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected ? Colors.white : AppColors.textDark,
                   ),
                 ),
@@ -620,30 +632,30 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.025),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'COST PER PERSON',
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.6,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
               color: Color(0xFF64748B),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // Chips Row: Free, ₹60, ₹100, ₹150, Custom
           SingleChildScrollView(
@@ -655,7 +667,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                   final bool isSelected = _selectedCost == cost;
                   final label = cost == 0 ? 'Free' : '₹$cost';
                   return Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.only(right: 6),
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -664,24 +676,25 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 7,
+                          horizontal: 11,
+                          vertical: 5.5,
                         ),
                         decoration: BoxDecoration(
                           color: isSelected ? AppColors.primary : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
                                 ? AppColors.primary
                                 : const Color(0xFFE2E8F0),
+                            width: 1.0,
                           ),
                         ),
                         child: Text(
                           label,
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 11.5,
                             fontWeight:
-                                isSelected ? FontWeight.w700 : FontWeight.w600,
+                                isSelected ? FontWeight.w600 : FontWeight.w500,
                             color: isSelected ? Colors.white : AppColors.textDark,
                           ),
                         ),
@@ -697,10 +710,14 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     final customVal = await showDialog<int>(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: const Text('Enter Custom Cost'),
+                        title: const Text(
+                          'Enter Custom Cost',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
                         content: TextField(
                           controller: controller,
                           keyboardType: TextInputType.number,
+                          style: const TextStyle(fontSize: 14),
                           decoration: const InputDecoration(
                             prefixText: '₹ ',
                             hintText: 'e.g. 200',
@@ -729,18 +746,19 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 7,
+                      horizontal: 11,
+                      vertical: 5.5,
                     ),
                     decoration: BoxDecoration(
                       color: !_costOptions.contains(_selectedCost)
                           ? AppColors.primary
                           : Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: !_costOptions.contains(_selectedCost)
                             ? AppColors.primary
                             : const Color(0xFFE2E8F0),
+                        width: 1.0,
                       ),
                     ),
                     child: Text(
@@ -748,7 +766,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                           ? '₹$_selectedCost'
                           : 'Custom',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 11.5,
                         fontWeight: FontWeight.w600,
                         color: !_costOptions.contains(_selectedCost)
                             ? Colors.white
@@ -760,9 +778,9 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           const Divider(color: Color(0xFFF1F5F9), height: 1),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // Split cost Switch Row
           Row(
@@ -774,30 +792,33 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     Text(
                       'Split cost',
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.textDark,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    SizedBox(height: 1),
                     Text(
                       'Split venue cost between players',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 10.5,
                         color: Color(0xFF64748B),
                       ),
                     ),
                   ],
                 ),
               ),
-              Switch(
-                value: _splitCost,
-                activeThumbColor: AppColors.primary,
-                onChanged: (val) {
-                  setState(() {
-                    _splitCost = val;
-                  });
-                },
+              Transform.scale(
+                scale: 0.75,
+                child: Switch(
+                  value: _splitCost,
+                  activeThumbColor: AppColors.primary,
+                  onChanged: (val) {
+                    setState(() {
+                      _splitCost = val;
+                    });
+                  },
+                ),
               ),
             ],
           ),
@@ -813,38 +834,38 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.025),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'WHO CAN JOIN?',
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.6,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
               color: Color(0xFF64748B),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // Segmented selector container
           Container(
             decoration: BoxDecoration(
               color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(10),
             ),
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(3),
             child: Row(
               children: _joinOptions.map((opt) {
                 final bool isSelected = _whoCanJoin == opt;
@@ -856,16 +877,16 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 9),
+                      padding: const EdgeInsets.symmetric(vertical: 6.5),
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.white : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.06),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 3,
+                                  offset: const Offset(0, 1),
                                 ),
                               ]
                             : null,
@@ -874,9 +895,9 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       child: Text(
                         opt,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 11.5,
                           fontWeight:
-                              isSelected ? FontWeight.w700 : FontWeight.w500,
+                              isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: isSelected
                               ? AppColors.primary
                               : const Color(0xFF64748B),
@@ -888,21 +909,21 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
               }).toList(),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // Info message
           const Row(
             children: [
               Icon(
                 Icons.info_outline_rounded,
-                size: 15,
+                size: 13,
                 color: Color(0xFF94A3B8),
               ),
-              SizedBox(width: 6),
+              SizedBox(width: 5),
               Text(
                 'Anyone nearby can discover and join',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 10.5,
                   color: Color(0xFF94A3B8),
                 ),
               ),
@@ -923,33 +944,33 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
         const Text(
           'ADD A NOTE (OPTIONAL)',
           style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.6,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
             color: Color(0xFF64748B),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: TextField(
             controller: _noteController,
             maxLines: 3,
             minLines: 2,
             style: const TextStyle(
-              fontSize: 13.5,
+              fontSize: 12.5,
               color: AppColors.textDark,
-              height: 1.4,
+              height: 1.35,
             ),
             decoration: const InputDecoration(
               hintText: 'Add note for participants...',
               hintStyle: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 color: Color(0xFF94A3B8),
               ),
               border: InputBorder.none,
@@ -968,10 +989,10 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       child: Row(
         children: [
           const Expanded(
@@ -981,30 +1002,33 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                 Text(
                   'Create a group chat',
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.textDark,
                   ),
                 ),
-                SizedBox(height: 2),
+                SizedBox(height: 1),
                 Text(
                   'Chat with players before the activity',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10.5,
                     color: Color(0xFF64748B),
                   ),
                 ),
               ],
             ),
           ),
-          Switch(
-            value: _createGroupChat,
-            activeThumbColor: AppColors.primary,
-            onChanged: (val) {
-              setState(() {
-                _createGroupChat = val;
-              });
-            },
+          Transform.scale(
+            scale: 0.75,
+            child: Switch(
+              value: _createGroupChat,
+              activeThumbColor: AppColors.primary,
+              onChanged: (val) {
+                setState(() {
+                  _createGroupChat = val;
+                });
+              },
+            ),
           ),
         ],
       ),
@@ -1021,15 +1045,15 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
           onTap: _createActivity,
           child: Container(
             width: double.infinity,
-            height: 52,
+            height: 44,
             decoration: BoxDecoration(
               color: AppColors.primary,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -1037,19 +1061,19 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             child: const Text(
               'Create Activity',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
                 color: Colors.white,
                 letterSpacing: 0.2,
               ),
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         const Text(
           'You can edit the details later.',
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 11,
             color: Color(0xFF94A3B8),
           ),
           textAlign: TextAlign.center,

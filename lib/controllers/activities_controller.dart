@@ -19,9 +19,13 @@ class ActivitiesController extends ChangeNotifier {
   late List<DateItemModel> _dates;
   late List<FilterChipModel> _filters;
   late List<ActivityModel> _allActivities;
+  late List<ActivityModel> _userActivities;
+  late List<PlayerModel> _quickInvites;
 
   List<DateItemModel> get dates => _dates;
   List<FilterChipModel> get filters => _filters;
+  List<ActivityModel> get userActivities => _userActivities;
+  List<PlayerModel> get quickInvites => _quickInvites;
 
   ActivitiesController._internal() {
     _initializeData();
@@ -278,6 +282,104 @@ class ActivitiesController extends ChangeNotifier {
         note: 'Bring camera or smartphone',
       ),
     ];
+
+    _userActivities = [
+      ActivityModel(
+        id: 'user_act_1',
+        title: 'Box Cricket Match',
+        subtitle: 'Today · 6:00 PM · Oval Maidan, Churchgate',
+        iconAsset: AppAssets.actBoxCricket,
+        sportCategory: SportCategory.boxCricket,
+        skillLevel: SkillLevel.intermediate,
+        joinedPlayers: 6,
+        totalPlayers: 10,
+        pricePerPerson: 150,
+        note: 'Match balls provided',
+        isHost: true,
+        venueName: 'Oval Maidan, Churchgate',
+        venueLocation: 'Mumbai · 1.5 km away',
+        players: _getDefaultPlayers(),
+      ),
+      ActivityModel(
+        id: 'user_act_2',
+        title: 'Badminton Doubles',
+        subtitle: 'Tomorrow · 7:30 AM · Sports Complex, Andheri',
+        iconAsset: AppAssets.actBadminton,
+        sportCategory: SportCategory.badminton,
+        skillLevel: SkillLevel.beginner,
+        joinedPlayers: 3,
+        totalPlayers: 4,
+        pricePerPerson: 200,
+        note: 'Bring your own racket',
+        isHost: true,
+        venueName: 'Sports Complex, Andheri',
+        venueLocation: 'Mumbai · 3.2 km away',
+        players: _getDefaultPlayers(),
+      ),
+    ];
+
+    _quickInvites = [
+      const PlayerModel(
+        id: 'qi_1',
+        name: 'Jayesh Mehta',
+        subtitle: '3 games together',
+        avatarBgColor: Color(0xFF475569),
+      ),
+      const PlayerModel(
+        id: 'qi_2',
+        name: 'Kunal Pandya',
+        subtitle: '7 games together',
+        avatarBgColor: Color(0xFF1E40AF),
+      ),
+    ];
+  }
+
+  static List<PlayerModel> _getDefaultPlayers() {
+    return [
+      const PlayerModel(
+        id: 'p_1',
+        name: 'Meet Patel',
+        role: 'HOST',
+        skill: 'Intermediate',
+        isHost: true,
+        avatarBgColor: Color(0xFF475569),
+      ),
+      const PlayerModel(
+        id: 'p_2',
+        name: 'Rohan Shah',
+        role: 'MEMBER',
+        skill: 'Advanced',
+        avatarBgColor: Color(0xFF334155),
+      ),
+      const PlayerModel(
+        id: 'p_3',
+        name: 'Amit Gohel',
+        role: 'MEMBER',
+        skill: 'Intermediate',
+        avatarBgColor: Color(0xFF0F172A),
+      ),
+      const PlayerModel(
+        id: 'p_4',
+        name: 'Divyesh Solanki',
+        role: 'MEMBER',
+        skill: 'Beginner',
+        avatarBgColor: Color(0xFF2563EB),
+      ),
+      const PlayerModel(
+        id: 'p_5',
+        name: 'Hardik Vora',
+        role: 'MEMBER',
+        skill: 'Advanced',
+        avatarBgColor: Color(0xFF64748B),
+      ),
+      const PlayerModel(
+        id: 'p_6',
+        name: 'Kunal Pandya',
+        role: 'MEMBER',
+        skill: 'Intermediate',
+        avatarBgColor: Color(0xFF1E40AF),
+      ),
+    ];
   }
 
   List<ActivityModel> get activities {
@@ -319,7 +421,23 @@ class ActivitiesController extends ChangeNotifier {
   }
 
   void addActivity(ActivityModel activity) {
-    _allActivities.insert(0, activity);
+    final hostActivity = activity.copyWith(
+      isHost: true,
+      players: activity.players ?? _getDefaultPlayers(),
+      venueConfirmed: true,
+    );
+    _allActivities.insert(0, hostActivity);
+    _userActivities.insert(0, hostActivity);
     notifyListeners();
+  }
+
+  void toggleInvitePlayer(String id) {
+    final idx = _quickInvites.indexWhere((p) => p.id == id);
+    if (idx != -1) {
+      _quickInvites[idx] = _quickInvites[idx].copyWith(
+        isInvited: !_quickInvites[idx].isInvited,
+      );
+      notifyListeners();
+    }
   }
 }

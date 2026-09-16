@@ -47,6 +47,11 @@ class ActivityModel {
   final int pricePerPerson;
   final String note;
   final DateTime? date;
+  final bool isHost;
+  final String? venueName;
+  final String? venueLocation;
+  final bool venueConfirmed;
+  final List<PlayerModel>? players;
 
   const ActivityModel({
     required this.id,
@@ -60,6 +65,11 @@ class ActivityModel {
     required this.pricePerPerson,
     this.note = 'No equipment needed',
     this.date,
+    this.isHost = false,
+    this.venueName,
+    this.venueLocation,
+    this.venueConfirmed = true,
+    this.players,
   });
 
   double get progress =>
@@ -81,6 +91,11 @@ class ActivityModel {
     int? pricePerPerson,
     String? note,
     DateTime? date,
+    bool? isHost,
+    String? venueName,
+    String? venueLocation,
+    bool? venueConfirmed,
+    List<PlayerModel>? players,
   }) {
     return ActivityModel(
       id: id ?? this.id,
@@ -94,6 +109,59 @@ class ActivityModel {
       pricePerPerson: pricePerPerson ?? this.pricePerPerson,
       note: note ?? this.note,
       date: date ?? this.date,
+      isHost: isHost ?? this.isHost,
+      venueName: venueName ?? this.venueName,
+      venueLocation: venueLocation ?? this.venueLocation,
+      venueConfirmed: venueConfirmed ?? this.venueConfirmed,
+      players: players ?? this.players,
+    );
+  }
+}
+
+class PlayerModel {
+  final String id;
+  final String name;
+  final String role; // 'HOST' or 'MEMBER'
+  final String skill; // 'Intermediate', 'Advanced', 'Beginner'
+  final String? avatarAsset;
+  final Color avatarBgColor;
+  final bool isHost;
+  final String? subtitle; // e.g. '3 games together'
+  final bool isInvited;
+
+  const PlayerModel({
+    required this.id,
+    required this.name,
+    this.role = 'MEMBER',
+    this.skill = 'Intermediate',
+    this.avatarAsset,
+    this.avatarBgColor = const Color(0xFF0D47A1),
+    this.isHost = false,
+    this.subtitle,
+    this.isInvited = false,
+  });
+
+  PlayerModel copyWith({
+    String? id,
+    String? name,
+    String? role,
+    String? skill,
+    String? avatarAsset,
+    Color? avatarBgColor,
+    bool? isHost,
+    String? subtitle,
+    bool? isInvited,
+  }) {
+    return PlayerModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      skill: skill ?? this.skill,
+      avatarAsset: avatarAsset ?? this.avatarAsset,
+      avatarBgColor: avatarBgColor ?? this.avatarBgColor,
+      isHost: isHost ?? this.isHost,
+      subtitle: subtitle ?? this.subtitle,
+      isInvited: isInvited ?? this.isInvited,
     );
   }
 }
